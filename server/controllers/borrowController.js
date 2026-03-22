@@ -4,11 +4,16 @@ const { Op } = require('sequelize');
 const borrowBooks = async (req, res) => {
   try {
     const { student_id, book_ids } = req.body;
+    
+    console.log('Borrow request received:', { student_id, book_ids });
 
     const user = await User.findOne({ where: { student_id } });
     if (!user) {
+      console.log('Student not found:', student_id);
       return res.status(404).json({ message: 'Student not found' });
     }
+
+    console.log('User found:', { id: user.id, student_id: user.student_id, full_name: user.full_name });
 
     const today = new Date();
     const dueDate = new Date(today);
@@ -20,14 +25,21 @@ const borrowBooks = async (req, res) => {
         throw new Error(`Book ${book_id} is not available`);
       }
 
-      await book.update({ status: 'borrowed' });
+      console.log('Processing book:', { book_id, title: book.title, status: book.status });
 
-      return await Borrow.create({
+      await book.update({ status: 'borrowed' });
+      
+      console.log('Book status updated to borrowed');
+
+      const borrow = await Borrow.create({
         user_id: user.id,
         book_id: book_id,
         borrow_date: today.toISOString().split('T')[0],
         due_date: dueDate.toISOString().split('T')[0]
       });
+      
+      console.log('Borrow record created:', borrow);
+      return borrow;
     });
 
     await Promise.all(borrowPromises);
@@ -168,50 +180,11 @@ const getAdminHistory = async (req, res) => {
   }
 };
 
-const getDashboardStats = async (req, res) => {
-  try {
-    const today = new Date();
-    const threeDaysFromNow = new Date(today);
-    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
-
-    const borrowedBooks = await Borrow.count({
-      where: { return_confirmed: false }
-    });
-
-    const dueWithin3Days = await Borrow.count({
-      where: {
-        return_confirmed: false,
-        due_date: {
-          [Op.lte]: threeDaysFromNow.toISOString().split('T')[0]
-        }
-      }
-    });
-
-    const overdueBooks = await Borrow.count({
-      where: {
-        return_confirmed: false,
-        due_date: {
-          [Op.lt]: today.toISOString().split('T')[0]
-        }
-      }
-    });
-
-    res.json({
-      borrowedBooks,
-      dueWithin3Days,
-      overdueBooks
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 module.exports = {
   borrowBooks,
   returnRequest,
   confirmReturn,
   getPendingReturns,
   getUserHistory,
-  getAdminHistory,
-  getDashboardStats
+  getAdminHistory
 };

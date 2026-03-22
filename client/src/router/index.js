@@ -6,7 +6,6 @@ import BookManagement from '../views/BookManagement.vue'
 import Borrow from '../views/Borrow.vue'
 import Return from '../views/Return.vue'
 import History from '../views/History.vue'
-import AdminDashboard from '../views/AdminDashboard.vue'
 import AdminReturns from '../views/AdminReturns.vue'
 import AdminHistory from '../views/AdminHistory.vue'
 
@@ -52,12 +51,6 @@ const routes = [
     meta: { requiresAuth: true, userOnly: true }
   },
   {
-    path: '/admin/dashboard',
-    name: 'AdminDashboard',
-    component: AdminDashboard,
-    meta: { requiresAuth: true, adminOnly: true }
-  },
-  {
     path: '/admin/returns',
     name: 'AdminReturns',
     component: AdminReturns,
@@ -84,12 +77,12 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !token) {
     next('/login')
   } else if (to.meta.requiresGuest && token) {
-    const redirectPath = role === 'admin' ? '/admin/dashboard' : '/books'
+    const redirectPath = role === 'admin' ? '/books' : '/books'
     next(redirectPath)
   } else if (to.meta.adminOnly && role !== 'admin') {
     next('/books')
   } else if (to.meta.userOnly && role !== 'user') {
-    next('/admin/dashboard')
+    next('/books')
   } else {
     next()
   }

@@ -11,9 +11,6 @@
             <router-link to="/book-management" class="nav-link">Book Management</router-link>
           </li>
           <li v-if="role === 'admin'" class="nav-item">
-            <router-link to="/admin/dashboard" class="nav-link">Dashboard</router-link>
-          </li>
-          <li v-if="role === 'admin'" class="nav-item">
             <router-link to="/admin/returns" class="nav-link">Returns</router-link>
           </li>
           <li v-if="role === 'admin'" class="nav-item">

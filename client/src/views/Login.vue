@@ -93,12 +93,6 @@
           </button>
         </form>
       </div>
-      
-      <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 4px; font-size: 12px;">
-        <strong>Default Accounts:</strong><br>
-        User: test@example.com / 1234<br>
-        Admin: admin@ex.com / 4321
-      </div>
     </div>
   </div>
 </template>
@@ -137,7 +131,7 @@ export default {
       try {
         await this.login(this.form)
         const user = JSON.parse(localStorage.getItem('user'))
-        this.$router.push(user.role === 'admin' ? '/admin/dashboard' : '/books')
+        this.$router.push(user.role === 'admin' ? '/books' : '/books')
       } catch (error) {
         this.error = error.response?.data?.message || 'Login failed'
       } finally {

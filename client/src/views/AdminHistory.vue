@@ -1,44 +1,42 @@
 <template>
   <div class="card">
-    <h2>Transaction History</h2>
+    <h2>ประวัติการยืมหนังสือทั้งหมด</h2>
     
-    <div v-if="loading" class="text-center">Loading...</div>
+    <div v-if="loading" class="text-center">กำลังโหลด...</div>
     
     <table v-else-if="history.length > 0" class="table">
       <thead>
         <tr>
-          <th>Transaction Date</th>
-          <th>Book ID</th>
-          <th>Category</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Borrower</th>
-          <th>Student ID</th>
-          <th>Borrow Date</th>
-          <th>Return Date</th>
+          <th>วันที่</th>
+          <th>รหัสหนังสือ</th>
+          <th>ชื่อหนังสือ</th>
+          <th>ผู้ยืม</th>
+          <th>รหัสนิสิต</th>
+          <th>วันยืม</th>
+          <th>วันคืน</th>
+          <th>สถานะ</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="record in history" :key="record.id">
           <td>{{ getTransactionDate(record) }}</td>
           <td>{{ record.Book.book_id }}</td>
-          <td>{{ record.Book.Category?.name || 'N/A' }}</td>
           <td>{{ record.Book.title }}</td>
+          <td>{{ record.User.full_name }}</td>
+          <td>{{ record.User.student_id }}</td>
+          <td>{{ record.borrow_date }}</td>
+          <td>{{ record.return_date || '-' }}</td>
           <td>
             <span :class="getStatusClass(record)">
               {{ getStatusText(record) }}
             </span>
           </td>
-          <td>{{ record.User.full_name }}</td>
-          <td>{{ record.User.student_id }}</td>
-          <td>{{ record.borrow_date }}</td>
-          <td>{{ record.return_date || 'Not returned' }}</td>
         </tr>
       </tbody>
     </table>
     
     <div v-else class="text-center">
-      No transaction history found.
+      ไม่พบประวัติการยืมหนังสือ
     </div>
   </div>
 </template>

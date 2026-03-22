@@ -1,37 +1,29 @@
 <template>
   <div class="card">
-    <h2>Borrowing History</h2>
+    <h2>ประวัติการยืมหนังสือของฉัน</h2>
     
-    <div class="form-group">
-      <label>Enter Student ID:</label>
-      <input 
-        v-model="studentId" 
-        type="text" 
-        placeholder="Enter student ID"
-        @input="fetchHistory"
-      />
+    <div v-if="loading" class="text-center">กำลังโหลด...</div>
+    
+    <div v-else-if="error" class="alert alert-danger">
+      {{ error }}
     </div>
-    
-    <div v-if="loading" class="text-center">Loading...</div>
     
     <table v-else-if="history.length > 0" class="table">
       <thead>
         <tr>
-          <th>Book ID</th>
-          <th>Category</th>
-          <th>Title</th>
-          <th>Borrow Date</th>
-          <th>Return Date</th>
-          <th>Status</th>
+          <th>รหัสหนังสือ</th>
+          <th>ชื่อหนังสือ</th>
+          <th>วันยืม</th>
+          <th>วันคืน</th>
+          <th>สถานะ</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="record in history" :key="record.id">
           <td>{{ record.Book.book_id }}</td>
-          <td>{{ record.Book.Category?.name || 'N/A' }}</td>
           <td>{{ record.Book.title }}</td>
           <td>{{ record.borrow_date }}</td>
-          <td>{{ record.return_date || 'Not returned' }}</td>
+          <td>{{ record.return_date || '-' }}</td>
           <td>
             <span :class="getStatusClass(record)">
               {{ getStatusText(record) }}
@@ -41,40 +33,46 @@
       </tbody>
     </table>
     
-    <div v-else-if="studentId && !loading" class="text-center">
-      No history found for this student ID.
-    </div>
-    
     <div v-else class="text-center">
-      Please enter a student ID to view borrowing history.
+      ไม่พบประวัติการยืมหนังสือ
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { borrowService } from '../services/borrowService'
 
 export default {
   name: 'History',
   data() {
     return {
-      studentId: '',
       history: [],
-      loading: false
+      loading: false,
+      error: ''
     }
+  },
+  computed: {
+    ...mapGetters(['user'])
+  },
+  async mounted() {
+    await this.fetchHistory()
   },
   methods: {
     async fetchHistory() {
-      if (!this.studentId) {
-        this.history = []
+      if (!this.user || !this.user.student_id) {
+        this.error = 'ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่'
         return
       }
       
       this.loading = true
+      this.error = ''
+      
       try {
-        this.history = await borrowService.getUserHistory(this.studentId)
+        this.history = await borrowService.getUserHistory(this.user.student_id)
       } catch (error) {
         console.error('Error fetching history:', error)
+        this.error = 'ไม่สามารถโหลดประวัติการยืมได้'
         this.history = []
       } finally {
         this.loading = false

@@ -6,8 +6,7 @@ const {
   confirmReturn,
   getPendingReturns,
   getUserHistory,
-  getAdminHistory,
-  getDashboardStats
+  getAdminHistory
 } = require('../controllers/borrowController');
 
 const router = express.Router();
@@ -19,6 +18,5 @@ router.get('/history/:student_id', authMiddleware, getUserHistory);
 router.get('/pending-returns', authMiddleware, adminMiddleware, getPendingReturns);
 router.post('/confirm-return', authMiddleware, adminMiddleware, confirmReturn);
 router.get('/admin-history', authMiddleware, adminMiddleware, getAdminHistory);
-router.get('/dashboard-stats', authMiddleware, adminMiddleware, getDashboardStats);
 
 module.exports = router;

@@ -1,22 +1,22 @@
 <template>
   <div class="card">
-    <h2>Book List</h2>
+    <h2>รายการหนังสือ</h2>
     
     <div style="display: flex; gap: 20px; margin-bottom: 20px;">
       <div class="form-group" style="flex: 1;">
-        <label>Search by Book ID or Title:</label>
+        <label>ค้นหาตามรหัสหรือชื่อหนังสือ:</label>
         <input 
           v-model="searchQuery" 
           type="text" 
-          placeholder="Enter book ID or title"
+          placeholder="กรอกรหัสหรือชื่อหนังสือ"
           @input="fetchBooks"
         />
       </div>
       
       <div class="form-group" style="flex: 1;">
-        <label>Filter by Category:</label>
+        <label>กรองตามหมวดหมู่:</label>
         <select v-model="selectedCategory" @change="fetchBooks">
-          <option value="">All Categories</option>
+          <option value="">ทุกหมวดหมู่</option>
           <option v-for="category in categories" :key="category.id" :value="category.id">
             {{ category.name }}
           </option>
@@ -24,17 +24,17 @@
       </div>
     </div>
     
-    <div v-if="loading" class="text-center">Loading...</div>
+    <div v-if="loading" class="text-center">กำลังโหลด...</div>
     
     <table v-else class="table">
       <thead>
         <tr>
-          <th>Book ID</th>
-          <th>Category</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Borrower</th>
+          <th style="width: 100px;">รหัสหนังสือ</th>
+          <th style="width: 150px;">หมวดหมู่</th>
+          <th>ชื่อหนังสือ</th>
+          <th style="width: 100px;">สถานะ</th>
+          <th style="width: 120px;">วันครบกำหนด</th>
+          <th style="width: 200px;">ผู้ยืม</th>
         </tr>
       </thead>
       <tbody>
@@ -54,7 +54,7 @@
     </table>
     
     <div v-if="books.length === 0 && !loading" class="text-center">
-      No books found.
+      ไม่พบรายการหนังสือ
     </div>
   </div>
 </template>
